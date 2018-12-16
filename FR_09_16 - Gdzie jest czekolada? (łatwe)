@@ -1,0 +1,88 @@
+# https://pl.spoj.com/problems/FR_09_16/
+
+Rozpatrzmy przypadek, w którym zakładamy iż kubek z czekoladą znajduje się na pierwszym miejscu.
+Założenie będzie poprawne, gdy spełniony zostanie warunek mówiący, że łączna objętość kubków z mlekiem
+jest dwukrotnie większa od łącznej objętości kubków z budyniem. Zależność tą zapisujemy jako:
+
+    kubek-z-mlekiem-1  +  kubek-z-mlekiem-2  =  2 * ( kubek-z-budyniem-1  +  kubek-z-budyniem-2 )
+
+Jako, że nie wiemy w jakiej kolejności ustawione zostały kubki, musimy sprawdzić wszystkie możliwe warianty, 
+co daje nam 4 silnia możliwości (permutacja zbioru cztero elementowego).
+
+    - kubek-z-mlekiem-1, kubek-z-mlekiem-2, kubek-z-budyniem-1, kubek-z-budyniem-2
+    - kubek-z-mlekiem-2, kubek-z-mlekiem-1, kubek-z-budyniem-1, kubek-z-budyniem-2
+    - kubek-z-budyniem-1, kubek-z-budyniem-2, kubek-z-mlekiem-1, kubek-z-mlekiem-2 
+    - kubek-z-budyniem-2, kubek-z-budyniem-1, kubek-z-mlekiem-1, kubek-z-mlekiem-2
+      ......................................
+      ......................................
+      itp.
+
+Zauważmy jednak, że w równaniu wykonujemy operacje dodawania dwóch liczb nieujemnych, które jest przemienne.
+Zatem warianty:
+
+    - kubek-z-mlekiem-1, kubek-z-mlekiem-2, kubek-z-budyniem-1, kubek-z-budyniem-2
+oraz
+    - kubek-z-mlekiem-2, kubek-z-mlekiem-1, kubek-z-budyniem-1, kubek-z-budyniem-2
+
+możemy zapisać w uogólnionej postaci
+
+    M,M,B,B
+
+Gdzie M oznacza kubek z mlekiem, a B kubek z budyniem. Ilość wariantów do sprawdzenia ograniczyliśmy zatem do
+sześciu przypadków.
+
+    M,M,B,B 
+    M,B,M,B
+    M,B,B,M 
+    B,B,M,M
+    B,M,B,M
+    B,M,M,B 
+
+Zauważmy dalej, że powyższe przydadki możemy rozdzielić na dwie grupy:
+
+(1)
+    M,M,B,B 
+    M,B,M,B
+    M,B,B,M 
+----------------    
+(2) B,B,M,M
+    B,M,B,M
+    B,M,M,B 
+
+Gdzie drugą grupe otrzymujemy z przekształcenia grupy pierwszej poprzez zamianę miejscami kubków z mlekiem
+na kubki z budyniem. W celu uniknięcia niepotrzebnego dublowania obliczeń sum M + M oraz B + B, wykonamy obliczenia
+wyłącznie dla grupy pierwszej. Aby uwzględnić również przypadki z grupy drugiej dodamy dodatkowe sprawdzenie poprawności
+równania odwrotnego, czyli: "Suma objętości kubków z mlekiem jest połową łącznej objętości kubków z budyniem". 
+
+Oznaczmy SM1 jako sumę objętości kubków z mlekiem z przypadku pierwszego, SB2 jako sumę objętości kubków z budyniem z przypadku 
+drugiego itp. Jeżeli kubek z czekoladą nie znajduje się na pierwszej pozycji, powtarzamy obliczenia dla kolejnych pozycji, aż
+do czwartej, co jest równoznaczne z umiejscowieniem go na piątym miejscu.  
+
+###################################################################################################################################
+
+textline = input()
+
+cups = textline.split()
+
+for i in range(5):
+    cups[i] = int(cups[i])
+
+i = 0
+while i < 4:
+    SM1 = cups[(i+1)%5] + cups[(i+2)%5]
+    SB1 = cups[(i+3)%5] + cups[(i+4)%5]
+    SM2 = cups[(i+1)%5] + cups[(i+3)%5]
+    SB2 = cups[(i+2)%5] + cups[(i+4)%5]
+    SM3 = cups[(i+1)%5] + cups[(i+4)%5]
+    SB3 = cups[(i+2)%5] + cups[(i+3)%5]
+
+    if SM1==2*SB1 or SM1==SB1/2 or\
+       SM2==2*SB2 or SM2==SB2/2 or\
+       SM3==2*SB3 or SM3==SB3/2:
+        print(i+1)
+        break
+    
+    i += 1
+
+if i == 4:
+    print(5)
