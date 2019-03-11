@@ -9,6 +9,7 @@ class Node:
         self.parent = None
         self.left = None
         self.right = None
+        self.value = None
 
 
 class Tree:
@@ -42,10 +43,10 @@ class Tree:
     def __successor(self, node):
         if node.right is not None:
             return self.__min(node.right)
-        
+
         parent = node.parent
         while parent is not None:
-            if parent.left == node:
+            if parent.left is node:
                 return parent
             else:
                 node = parent
@@ -58,7 +59,7 @@ class Tree:
         
         parent = node.parent
         while parent is not None:
-            if parent.right == node:
+            if parent.right is node:
                 return parent
             else:
                 node = parent
@@ -67,7 +68,7 @@ class Tree:
 
     def __del_leafless(self, node):
         if node.parent is not None:
-            if node.parent.left == node:
+            if node.parent.left is node:
                 node.parent.left = None
             else:
                 node.parent.right = None
@@ -80,20 +81,49 @@ class Tree:
         else:
             child = node.right
 
-        child.parent = node.parent
-
-        if node.parent.left == node:
-            node.parent.left = child
+        if node.parent is None:
+            child.parent = None
+            self.root_node = child
         else:
-            node.parent.right = child
+            child.parent = node.parent
+            if node.parent.left is node:
+                node.parent.left = child
+            else:
+                node.parent.right = child
 
         node.del_connections()
+
+    def __pre_order(self, node):
+        result = str(node.value) + ' '
+        if node.left is not None:
+            result += self.__pre_order(node.left)
+        if node.right is not None:
+            result += self.__pre_order(node.right)
+        return result
+
+    def __in_order(self, node):
+        result = ''
+        if node.left is not None:
+            result += self.__in_order(node.left)
+        result += str(node.value) + ' '
+        if node.right is not None:
+            result += self.__in_order(node.right)
+        return result
+
+    def __post_order(self, node):
+        result = ''
+        if node.left is not None:
+            result += self.__post_order(node.left)
+        if node.right is not None:
+            result += self.__post_order(node.right)
+        result += str(node.value) + ' '
+        return result
 
     def __nodes_at_deph(self, node, deph, actual_deph=0):
         result = ''
 
         if (deph == actual_deph + 1) and (node.left or node.right is not None):
-            result += 'P({}) '.format(node.value)
+            result += 'P(' + str(node.value) + ') '
             if node.left is None:
                 result += '- '
             else:
@@ -134,62 +164,118 @@ class Tree:
             return
 
         if node.left and node.right is not None:
-            successor = self.__successor(node)
-            node.value = successor.value
-            self.__del_with_one_leaf(successor)
+            predecessor = self.__predecessor(node)
+            node.value = predecessor.value
+            if predecessor.left is not None:
+                self.__del_with_one_leaf(predecessor)
+            else:
+                self.__del_leafless(predecessor)
         elif node.left or node.right is not None:
             self.__del_with_one_leaf(node)
         else:
             self.__del_leafless(node)
             
-    def search_value(self, value):
+    def search(self, value):
         node = self.__search(value)
         if node is None:
-            print('-')
+            return '-'
         else:
-            print(node.value)
+            return node.value
 
-    def search_successor(self, value):
+    def min(self):
+        node = self.__min(self.root_node)
+        return node.value
+
+    def max(self):
+        node = self.__max(self.root_node)
+        return node.value
+
+    def successor(self, value):
         node = self.__search(value)
         if node is None:
-            print('-')
+            return '-'
         else:
             successor = self.__successor(node)
             if successor is None:
-                print('-')
+                return '-'
             else:
-                print(successor.value)
+                return successor.value
 
-    def search_predecessor(self, value):
+    def predecessor(self, value):
         node = self.__search(value)
         if node is None:
-            print('-')
+            return '-'
         else:
             predecessor = self.__predecessor(node)
             if predecessor is None:
-                print('-')
+                return '-'
             else:
-                print(predecessor.value)
+                return predecessor.value
 
-    def print(self):
+    def print_tree(self):
         result = self.root_node.value
         deph = 1
-        
+
         while result:
             print(result)
             result = self.__nodes_at_deph(self.root_node, deph)
             deph += 1
 
+    def pre_order(self):
+        result = self.__pre_order(self.root_node)
+        return result
 
-import fileinput
-data_file = fileinput.input("./data.txt")          
+    def in_order(self):
+        result = self.__in_order(self.root_node)
+        return result
+
+    def post_order(self):
+        result = self.__post_order(self.root_node)
+        return result
+
+output = []
+tests = int(input())
+
+for i in range(1, tests+1):
+    output.append('test ' + str(i))
+    iterations = int(input())
+    root_val = int(input()[2:])
+    tree = Tree(root_val)
+    
+    while iterations > 1:
+        operation = input().split()
+        command = operation[0]
+        value = int(operation[1])
+        iterations -= 1
+
+        if command == 'I':
+            tree.insert(value)
+            continue
+        if command == 'D':
+            tree.delete(value)
+            continue
+
+        result = ''
+        if command == 'S':
+            result = tree.search(value)
+        elif command == 'N':
+            result = tree.successor(value)
+        elif command == 'P':
+            result = tree.predecessor(value)
+        elif command == 'X':
+            if value == 0:
+                result = tree.min()
+            else:
+                result = tree.max()
+        elif command == 'R':
+            if value == 0:
+                result = tree.in_order()
+            elif value == 1:
+                result = tree.pre_order()
+            else:
+                result = tree.post_order()
         
-tree = Tree(5)
+        output.append(result)
 
-for line in data_file:
-    line = line.rstrip('\n')
-    line_arr = line.split(" ", 1)
-
-    tree.insert(int(line_arr[1]))
-
-tree.print()
+for line in output:
+    print(line)
