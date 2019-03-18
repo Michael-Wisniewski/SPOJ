@@ -1,3 +1,7 @@
+# Zadanie
+# https://pl.spoj.com/problems/FR_09_16/
+# Opis rozwiązania
+# http://aroundpython.com/index.php/2019/03/09/gdzie-jest-czekolada/
 textline = input()
 
 cups = textline.split()

@@ -1,3 +1,7 @@
+# Zadanie
+# https://pl.spoj.com/problems/TBDW/
+# Opis rozwiązania
+# http://aroundpython.com/index.php/2019/03/11/binarne-drzewa-wyszukiwawcze/
 class Node:
     def __init__(self, value, parent=None):
         self.value = value
