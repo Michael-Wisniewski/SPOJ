@@ -3,6 +3,8 @@
 # Opis rozwiązania
 # http://aroundpython.com/index.php/2019/03/18/git/
 import sys
+
+
 class Branch:
     def __init__(self, name):
         self.name = name

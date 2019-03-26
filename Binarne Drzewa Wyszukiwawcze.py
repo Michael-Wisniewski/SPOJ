@@ -2,6 +2,8 @@
 # https://pl.spoj.com/problems/TBDW/
 # Opis rozwiązania
 # http://aroundpython.com/index.php/2019/03/11/binarne-drzewa-wyszukiwawcze/
+
+
 class Node:
     def __init__(self, value, parent=None):
         self.value = value
@@ -139,9 +141,9 @@ class Tree:
                 result += str(node.right.value) + ' '
         else:
             if node.left is not None:
-                result += self.__nodes_at_deph(node.left, deph, actual_deph + 1)
+                result += self.__nodes_at_deph(node.left, deph, actual_deph+1)
             if node.right is not None:
-                result += self.__nodes_at_deph(node.right, deph, actual_deph + 1)
+                result += self.__nodes_at_deph(node.right, deph, actual_deph+1)
 
         return result
 
